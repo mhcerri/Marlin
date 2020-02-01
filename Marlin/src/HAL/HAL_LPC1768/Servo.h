@@ -58,6 +58,10 @@ class libServo: public Servo {
     static_assert(COUNT(servo_delay) == NUM_SERVOS, "SERVO_DELAY must be an array NUM_SERVOS long.");
 
     if (attach(servo_info[servoIndex].Pin.nbr) >= 0) {    // try to reattach
+      /* workaround for too long pulse on the servo pin */
+      if ( (servoIndex == 0) && ( extDigitalRead(SERVO0_PIN) == 1 ) ) {
+        safe_delay(3);
+      }
       write(value);
       safe_delay(servo_delay[servoIndex]); // delay to allow servo to reach position
       #if ENABLED(DEACTIVATE_SERVOS_AFTER_MOVE)
